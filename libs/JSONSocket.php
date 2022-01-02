@@ -99,13 +99,15 @@ trait JSONSocketClient {
             while(true) {
                 $idx = strpos($data, "\n");
                 if($idx === false) break;
-                $packet = substr($data, 0, $idx);
+                $packet = trim(substr($data, 0, $idx));
                 $data = substr($data, $idx+1);
-                try {
-                    $this->JSCOnReceiveData(json_decode($packet, true));
-                } catch(Exception $e) {
-                    trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
-                    $this->SendDebug('Received Data', $data, 0);
+                if($packet) {
+                    try {
+                        $this->JSCOnReceiveData(json_decode($packet, true));
+                    } catch(Exception $e) {
+                        trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
+                        $this->SendDebug('Received Data', $data, 0);
+                    }
                 }
             }
         }

@@ -112,7 +112,7 @@ class BeoPlaySpeakerDevice extends IPSModule
         return true;
     }
  
-    protected function JSCOnReceiveData($opCode, $data) {
+    protected function JSCOnReceiveData($data) {
         $this->SendDebug('Receive data', json_encode($data));
     }
 
