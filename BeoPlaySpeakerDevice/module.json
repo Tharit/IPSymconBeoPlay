@@ -1,0 +1,15 @@
+{
+	"id": "{D0F6BA73-39B2-4D92-BE1A-CB9709E0F81F}",
+	"name": "BeoPlaySpeakerDevice",
+	"type": 3,
+	"vendor": "B&O",
+	"aliases": 
+	[
+		"BeoPlay Speaker"
+	],
+	"parentRequirements": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"childRequirements": [],
+	"implemented": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"prefix": "BeoPlaySpeaker",
+    "url": "https://github.com/tharit/IPSymconBeoPlay"
+}

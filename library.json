@@ -1,0 +1,12 @@
+{
+    "id": "{A0E85A29-234D-4A0F-827A-C1DE2249AAE3}",
+    "name": "BeoPlaySpeaker",
+    "author": "Martin Kleinhans",
+    "url": "https://github.com/tharit/IPSymconBeoPlay",
+    "compatibility": {
+        "version": "5.5"
+    },
+    "version": "1.0",
+    "build": 1,
+    "date": 1
+}
