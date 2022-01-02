@@ -1,11 +1,11 @@
 <?php
 
 trait JSONSocketClient {
-    protected function WSCCreate() {
+    protected function JSCCreate() {
         $this->RegisterMessage(0, IPS_KERNELSHUTDOWN);
     }
 
-    protected function WSCResetState() {
+    protected function JSCResetState() {
         $this->SetReceiveDataFilter('');
         $this->MUSetBuffer('Data', '');
         $this->MUSetBuffer('State', 0);
@@ -13,8 +13,8 @@ trait JSONSocketClient {
         $this->MUSetBuffer('PayloadData', '');
     }
 
-    protected function WSCSetReceiveDataFilter($filter) {
-        $this->MUSetBuffer('WSCReceiveDataFilter', $filter);
+    protected function JSCSetReceiveDataFilter($filter) {
+        $this->MUSetBuffer('JSCReceiveDataFilter', $filter);
         if($this->MUGetBuffer('State') == 2) {
             if($filter) {
                 $this->SetReceiveDataFilter($filter);
@@ -24,16 +24,16 @@ trait JSONSocketClient {
         }
     }
 
-    protected function WSCRequestAction($value) {
+    protected function JSCRequestAction($value) {
     }
 
-    protected function WSCMessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    protected function JSCMessageSink($TimeStamp, $SenderID, $Message, $Data) {
     }
 
     /**
      *
      */
-    protected function WSCConnect($ip, $path, $cookie)
+    protected function JSCConnect($ip, $path, $cookie)
     {
         $Header[] = 'GET ' . $path . ' HTTP/1.1';
         $Header[] = 'Host: ' . $ip;
@@ -51,11 +51,11 @@ trait JSONSocketClient {
         return true;
     }
 
-    protected function WSCGetState() {
+    protected function JSCGetState() {
         return $this->MUGetBuffer('State');
     } 
 
-    protected function WSCDisconnect($canReconnect = true) {
+    protected function JSCDisconnect($canReconnect = true) {
         $parentID = $this->GetConnectionID();
         if (!IPS_GetProperty($parentID, 'Open')) {
             return;
@@ -63,13 +63,13 @@ trait JSONSocketClient {
         IPS_SetProperty($parentID, 'Open', false);
         @IPS_ApplyChanges($parentID);
 
-        if($canReconnect && $this->WSCOnDisconnect()) {
+        if($canReconnect && $this->JSCOnDisconnect()) {
             IPS_SetProperty($parentID, 'Open', true);
             @IPS_ApplyChanges($parentID);
         }
     }
 
-    protected function WSCReceiveData($data)
+    protected function JSCReceiveData($data)
     {
         // unpack & decode data
         $data = json_decode($data);
@@ -88,7 +88,7 @@ trait JSONSocketClient {
                     $this->MUSetBuffer('Data', '');
                     $this->MUSetBuffer('State', 2);
 
-                    $filter = $this->MUGetBuffer('WSCReceiveDataFilter');
+                    $filter = $this->MUGetBuffer('JSCReceiveDataFilter');
                     if($filter) {
                         $this->SetReceiveDataFilter($filter);
                     }
@@ -99,7 +99,7 @@ trait JSONSocketClient {
                 }
             }  catch (Exception $exc) {
                 $this->SendDebug('Error', $exc->GetMessage(), 0);
-                $this->WSCDisconnect();
+                $this->JSCDisconnect();
                 trigger_error($exc->getMessage(), E_USER_NOTICE);
                 return;
             }
@@ -110,7 +110,7 @@ trait JSONSocketClient {
                 $packet = substr($data, 0, $idx);
                 $data = substr($data, $idx+1);
                 try {
-                    $this->WSCOnReceiveData(json_decode($packet, true));
+                    $this->JSCOnReceiveData(json_decode($packet, true));
                 } catch(Exception $e) {
                     trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
                     $this->SendDebug('Received Data', $data, 0);
@@ -119,7 +119,7 @@ trait JSONSocketClient {
         }
 
         if(strlen($data) > 1024 * 1024) {
-            $this->WSCDisconnect();
+            $this->JSCDisconnect();
             trigger_error("Maximum frame size exceeded", E_USER_NOTICE);
             return;
         }
