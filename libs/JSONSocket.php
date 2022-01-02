@@ -102,14 +102,24 @@ trait JSONSocketClient {
                 $idx = strpos($data, "\r\n");
                 if($idx === false) break;
                 $numOctets = hexdec(substr($data, 0, $idx));
-                $packet = substr($data, $idx+2, $numOctets);
+                $chunk = substr($data, $idx+2, $numOctets);
                 $data = substr($data, $idx+2+$numOctets+2);
-                if($packet) {
-                    try {
-                        $this->JSCOnReceiveData(json_decode($packet, true));
-                    } catch(Exception $e) {
-                        trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
-                        $this->SendDebug('Received Data', $data, 0);
+                if($chunk) {
+                    while(true) {
+
+                        $idx = strpos($chunk, "\r\n");
+                        if($idx === false) break;
+                        $packet = substr($chunk, 0, $idx);
+                        $chunk = substr($data, $idx+2);
+
+                        if($packet) {
+                            try {
+                                $this->JSCOnReceiveData(json_decode($packet, true));
+                            } catch(Exception $e) {
+                                trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
+                                $this->SendDebug('Received Data', $data, 0);
+                            }
+                        }
                     }
                 }
             }
