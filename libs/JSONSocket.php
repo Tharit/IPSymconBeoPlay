@@ -101,7 +101,7 @@ trait JSONSocketClient {
             while(true) {
                 $idx = strpos($data, "\r\n");
                 if($idx === false) break;
-                $numOctets = substr($data, 0, $idx);
+                $numOctets = hexdec(substr($data, 0, $idx));
                 $packet = substr($data, $idx+2, $numOctets);
                 $data = substr($data, $idx+2+$numOctets+2);
                 if($packet) {
