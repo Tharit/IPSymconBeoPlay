@@ -154,6 +154,7 @@ class BeoPlaySpeakerDevice extends IPSModule
             }
             $this->SetValue("Cover", $cover);
             $this->SetValue("Duration", isset($data['duration']) ? $data['duration'] : 0);
+            $this->SetValue("Position", 0);
         }
         if($type === 'NOW_PLAYING_ENDED' && $kind === 'playing') {
             $this->SetValue("Title", '-');
