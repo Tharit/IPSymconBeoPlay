@@ -10,7 +10,7 @@ require_once(__DIR__ . '/../libs/ModuleUtilities.php');
 require_once(__DIR__ . '/../libs/JSONSocket.php');
 require_once(__DIR__ . '/../libs/BeoPlayAPI.php');
 
-class UnifiController extends IPSModule
+class BeoPlaySpeakerDevice extends IPSModule
 {
     use ModuleUtilities;
     use JSONSocketClient;
