@@ -110,7 +110,7 @@ trait JSONSocketClient {
                         $idx = strpos($chunk, "\r\n");
                         if($idx === false) break;
                         $packet = substr($chunk, 0, $idx);
-                        $chunk = substr($data, $idx+2);
+                        $chunk = substr($chunk, $idx+2);
 
                         if($packet) {
                             try {
