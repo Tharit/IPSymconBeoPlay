@@ -9,8 +9,6 @@ trait JSONSocketClient {
         $this->SetReceiveDataFilter('');
         $this->MUSetBuffer('Data', '');
         $this->MUSetBuffer('State', 0);
-        $this->MUSetBuffer('PayloadType', 0);
-        $this->MUSetBuffer('PayloadData', '');
     }
 
     protected function JSCSetReceiveDataFilter($filter) {
@@ -104,9 +102,11 @@ trait JSONSocketClient {
                 return;
             }
         } else if($state === 2) {
-            while(true) {
+            $this->SendDebug('Received Data', $data, 0);
+
+            //while(true) {
                 $idx = strpos($data, "\n");
-                if($idx === false) break;
+            //    if($idx === false) break;
                 $packet = substr($data, 0, $idx);
                 $data = substr($data, $idx+1);
                 try {
@@ -115,7 +115,7 @@ trait JSONSocketClient {
                     trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
                     $this->SendDebug('Received Data', $data, 0);
                 }
-            }
+            //}
         }
 
         if(strlen($data) > 1024 * 1024) {
