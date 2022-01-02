@@ -91,7 +91,7 @@ trait JSONSocketClient {
                     $this->SetReceiveDataFilter($filter);
                 }
 
-                $data = substr($data, $idx+1);
+                $data = substr($data, $idx+4);
             }
         } else if($state === 2) {
             $this->SendDebug('Received Data', $data, 0);
