@@ -79,34 +79,26 @@ trait JSONSocketClient {
         if($state === 0) {
             $this->SendDebug('Error', 'Unexpected data received while connecting', 0);
         } else if($state === 1) {
-            try {
-                if (strpos($data, "\r\n\r\n") !== false) {
-                    //$this->SendDebug('Handshake response', $data, 0);
+            $idx = strpos($data, "\r\n\r\n");
+            if ($idx !== false) {
+                //$this->SendDebug('Handshake response', $data, 0);
 
-                    $this->MUSetBuffer('Data', '');
-                    $this->MUSetBuffer('State', 2);
+                $this->MUSetBuffer('Data', '');
+                $this->MUSetBuffer('State', 2);
 
-                    $filter = $this->MUGetBuffer('JSCReceiveDataFilter');
-                    if($filter) {
-                        $this->SetReceiveDataFilter($filter);
-                    }
-                    return;
-                } else {
-                    $this->SendDebug('Incomplete handshake response', $data, 0);
-                    throw new Exception("Incomplete handshake response received");
+                $filter = $this->MUGetBuffer('JSCReceiveDataFilter');
+                if($filter) {
+                    $this->SetReceiveDataFilter($filter);
                 }
-            }  catch (Exception $exc) {
-                $this->SendDebug('Error', $exc->GetMessage(), 0);
-                $this->JSCDisconnect();
-                trigger_error($exc->getMessage(), E_USER_NOTICE);
-                return;
+
+                $data = substr($data, $idx+1);
             }
         } else if($state === 2) {
             $this->SendDebug('Received Data', $data, 0);
 
-            //while(true) {
+            while(true) {
                 $idx = strpos($data, "\n");
-            //    if($idx === false) break;
+                if($idx === false) break;
                 $packet = substr($data, 0, $idx);
                 $data = substr($data, $idx+1);
                 try {
@@ -115,7 +107,7 @@ trait JSONSocketClient {
                     trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
                     $this->SendDebug('Received Data', $data, 0);
                 }
-            //}
+            }
         }
 
         if(strlen($data) > 1024 * 1024) {
