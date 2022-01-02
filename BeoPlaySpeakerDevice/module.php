@@ -31,7 +31,8 @@ class BeoPlaySpeakerDevice extends IPSModule
         $this->RegisterVariableString("Application", "Application");
         $this->RegisterVariableString("State", "State");
         $this->RegisterVariableString("Title", "Title");
-        $this->RegisterVariableString("Position", "Position");
+        $this->RegisterVariableInteger("Position", "Position");
+        $this->RegisterVariableInteger("Duration", "Duration");
         $this->RegisterVariableString("Cover", "Cover");
         $this->RegisterVariableFloat("Volume", "Volume", "~Intensity.1");
         $this->EnableAction("Volume");
@@ -152,10 +153,13 @@ class BeoPlaySpeakerDevice extends IPSModule
                 $cover = "";
             }
             $this->SetValue("Cover", $cover);
+            $this->SetValue("Duration", isset($data['duration']) ? $data['duration'] : 0);
         }
         if($type === 'NOW_PLAYING_ENDED' && $kind === 'playing') {
             $this->SetValue("Title", '-');
             $this->SetValue("Cover", "");
+            $this->SetValue("Source", "-");
+            $this->SetValue("Duration", 0);
         }
 
         // progress

@@ -94,8 +94,6 @@ trait JSONSocketClient {
                 $data = substr($data, $idx+4);
             }
         } else if($state === 2) {
-            $this->SendDebug('Received Data', $data, 0);
-
             // chunked encoding
             // <#octets>CRLF<data>CRLF
             while(true) {
