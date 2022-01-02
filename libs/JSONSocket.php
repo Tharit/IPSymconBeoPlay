@@ -1,11 +1,11 @@
 <?php
 
 trait JSONSocketClient {
-    protected function JSCCreate() {
+    protected function WSCCreate() {
         $this->RegisterMessage(0, IPS_KERNELSHUTDOWN);
     }
 
-    protected function JSCResetState() {
+    protected function WSCResetState() {
         $this->SetReceiveDataFilter('');
         $this->MUSetBuffer('Data', '');
         $this->MUSetBuffer('State', 0);
@@ -13,8 +13,8 @@ trait JSONSocketClient {
         $this->MUSetBuffer('PayloadData', '');
     }
 
-    protected function JSCSetReceiveDataFilter($filter) {
-        $this->MUSetBuffer('JSCReceiveDataFilter', $filter);
+    protected function WSCSetReceiveDataFilter($filter) {
+        $this->MUSetBuffer('WSCReceiveDataFilter', $filter);
         if($this->MUGetBuffer('State') == 2) {
             if($filter) {
                 $this->SetReceiveDataFilter($filter);
@@ -24,16 +24,16 @@ trait JSONSocketClient {
         }
     }
 
-    protected function JSCRequestAction($value) {
+    protected function WSCRequestAction($value) {
     }
 
-    protected function JSCMessageSink($TimeStamp, $SenderID, $Message, $Data) {
+    protected function WSCMessageSink($TimeStamp, $SenderID, $Message, $Data) {
     }
 
     /**
      *
      */
-    protected function JSCConnect($ip, $path, $cookie)
+    protected function WSCConnect($ip, $path, $cookie)
     {
         $Header[] = 'GET ' . $path . ' HTTP/1.1';
         $Header[] = 'Host: ' . $ip;
@@ -51,11 +51,11 @@ trait JSONSocketClient {
         return true;
     }
 
-    protected function JSCGetState() {
+    protected function WSCGetState() {
         return $this->MUGetBuffer('State');
     } 
 
-    protected function JSCDisconnect($canReconnect = true) {
+    protected function WSCDisconnect($canReconnect = true) {
         $parentID = $this->GetConnectionID();
         if (!IPS_GetProperty($parentID, 'Open')) {
             return;
@@ -63,13 +63,13 @@ trait JSONSocketClient {
         IPS_SetProperty($parentID, 'Open', false);
         @IPS_ApplyChanges($parentID);
 
-        if($canReconnect && $this->JSCOnDisconnect()) {
+        if($canReconnect && $this->WSCOnDisconnect()) {
             IPS_SetProperty($parentID, 'Open', true);
             @IPS_ApplyChanges($parentID);
         }
     }
 
-    protected function JSCReceiveData($data)
+    protected function WSCReceiveData($data)
     {
         // unpack & decode data
         $data = json_decode($data);
@@ -88,7 +88,7 @@ trait JSONSocketClient {
                     $this->MUSetBuffer('Data', '');
                     $this->MUSetBuffer('State', 2);
 
-                    $filter = $this->MUGetBuffer('JSCReceiveDataFilter');
+                    $filter = $this->MUGetBuffer('WSCReceiveDataFilter');
                     if($filter) {
                         $this->SetReceiveDataFilter($filter);
                     }
@@ -99,18 +99,18 @@ trait JSONSocketClient {
                 }
             }  catch (Exception $exc) {
                 $this->SendDebug('Error', $exc->GetMessage(), 0);
-                $this->JSCDisconnect();
+                $this->WSCDisconnect();
                 trigger_error($exc->getMessage(), E_USER_NOTICE);
                 return;
             }
         } else if($state === 2) {
             while(true) {
-                $idx = strpos($data, '\n');
+                $idx = strpos($data, "\n");
                 if($idx === false) break;
                 $packet = substr($data, 0, $idx);
                 $data = substr($data, $idx+1);
                 try {
-                    $this->JSCOnReceiveData(json_decode($packet, true));
+                    $this->WSCOnReceiveData(json_decode($packet, true));
                 } catch(Exception $e) {
                     trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
                     $this->SendDebug('Received Data', $data, 0);
@@ -119,7 +119,7 @@ trait JSONSocketClient {
         }
 
         if(strlen($data) > 1024 * 1024) {
-            $this->JSCDisconnect();
+            $this->WSCDisconnect();
             trigger_error("Maximum frame size exceeded", E_USER_NOTICE);
             return;
         }
