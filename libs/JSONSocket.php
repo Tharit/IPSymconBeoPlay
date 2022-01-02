@@ -113,11 +113,11 @@ trait JSONSocketClient {
                         $chunk = substr($chunk, $idx+2);
 
                         if($packet) {
+                            $this->SendDebug('Received Data', $packet, 0);
                             try {
                                 $this->JSCOnReceiveData(json_decode($packet, true));
                             } catch(Exception $e) {
                                 trigger_error("Error in websocket data handler: " . $exc->getMessage(), E_USER_WARNING);
-                                $this->SendDebug('Received Data', $data, 0);
                             }
                         }
                     }

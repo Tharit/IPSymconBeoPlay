@@ -27,13 +27,14 @@ class BeoPlaySpeakerDevice extends IPSModule
         $this->JSCCreate();
 
         // variables
-        /*
+        $this->RegisterVariableString("Source", "Source");
         $this->RegisterVariableString("Application", "Application");
         $this->RegisterVariableString("State", "State");
         $this->RegisterVariableString("Title", "Title");
+        $this->RegisterVariableString("Position", "Position");
+        $this->RegisterVariableString("Cover", "Cover");
         $this->RegisterVariableFloat("Volume", "Volume", "~Intensity.1");
         $this->EnableAction("Volume");
-        */
 
         // messages
         $this->RegisterMessage(0, IPS_KERNELSTARTED);
@@ -113,7 +114,56 @@ class BeoPlaySpeakerDevice extends IPSModule
     }
  
     protected function JSCOnReceiveData($data) {
-        $this->SendDebug('Receive data', json_encode($data), 0);
+        if(!isset($data['notification'])) return;
+        $data = $data['notification'];
+        $type = $data['type'];
+        $kind = $data['kind'];
+        $data = $data['data'];
+
+        // volume
+        if($type === 'VOLUME' && $kind === 'renderer' &&
+            isset($data['speaker']) && isset($data['speaker']['level'])) {
+            $this->SetValue("Volume", $data['speaker']['level']);
+        }
+
+        // source
+        if($type === 'SOURCE' && $kind === 'source' &&
+            isset($data['primaryExperience']) && isset($data['primaryExperience']['source'])) {
+            $source = isset($data['primaryExperience']['source']['friendlyName']) ?
+                $data['primaryExperience']['source']['friendlyName'] : '-';
+            $this->SetValue("Source", $source);
+        }
+
+        // title
+        if($type === 'NOW_PLAYING_STORED_MUSIC' && $kind === 'playing') {
+            if(isset($data['name'])) {
+                $newTitle = $data['name'];
+                if(isset($data['artist'])) {
+                    $newTitle .= ' • ' . $data['artist'];
+                }
+            } else {
+                $newTitle = '-';
+            }
+            $this->SetValue("Title", $newTitle);
+            if(isset($data['trackImage']) && is_array($data['trackImage']) &&
+            count($data['trackImage']) >= 1 && isset($data['trackImage'][0]['url'])) {
+                $cover = $data['trackImage'][0]['url'];
+            } else {
+                $cover = "";
+            }
+            $this->SetValue("Cover", $cover);
+        }
+        if($type === 'NOW_PLAYING_ENDED' && $kind === 'playing') {
+            $this->SetValue("Title", '-');
+            $this->SetValue("Cover", "");
+        }
+
+        // progress
+        if($type === 'PROGRESS_INFORMATION' && $kind === 'playing') {
+            $newState = isset($data['state']) ? $data['state'] : 'stop';
+            $this->SetValue("State", $newState);
+            $this->SetValue("Position", isset($data['position']) ? $data['position'] : 0);
+        }
     }
 
     public function RequestAction($ident, $value)
@@ -129,12 +179,25 @@ class BeoPlaySpeakerDevice extends IPSModule
     //------------------------------------------------------------------------------------
     // external methods
     //------------------------------------------------------------------------------------
-    
+    public function GetTrackerData() {
+        $data = $this->MUGetBuffer('Tracker');
+        return json_encode(empty($data) ? null : $data);
+    }
+
+    public function GetMediaData() {
+        $data = $this->MUGetBuffer('Media');
+        return json_encode(empty($data) ? null : $data);
+    }
 
     //------------------------------------------------------------------------------------
     // module internals
     //------------------------------------------------------------------------------------
     private function ResetState() {
+        $this->SetValue('Title', '-');
+        $this->SetValue('Source', '-');
+        $this->SetValue('State', 'stop');
+        $this->MUSetBuffer('Media', null);
+        $this->MUSetBuffer('Tracker', null);
         $this->JSCResetState();
     }
 
