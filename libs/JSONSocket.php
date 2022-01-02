@@ -96,11 +96,14 @@ trait JSONSocketClient {
         } else if($state === 2) {
             $this->SendDebug('Received Data', $data, 0);
 
+            // chunked encoding
+            // <#octets>CRLF<data>CRLF
             while(true) {
-                $idx = strpos($data, "\n");
+                $idx = strpos($data, "\r\n");
                 if($idx === false) break;
-                $packet = trim(substr($data, 0, $idx));
-                $data = substr($data, $idx+1);
+                $numOctets = substr($data, 0, $idx);
+                $packet = substr($data, $idx+2, $numOctets);
+                $data = substr($data, $idx+2+$numOctets+2);
                 if($packet) {
                     try {
                         $this->JSCOnReceiveData(json_decode($packet, true));
