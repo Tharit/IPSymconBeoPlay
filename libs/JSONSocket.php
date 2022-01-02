@@ -33,7 +33,7 @@ trait JSONSocketClient {
     /**
      *
      */
-    protected function JSCConnect($ip, $path, $cookie)
+    protected function JSCConnect($ip, $path)
     {
         $Header[] = 'GET ' . $path . ' HTTP/1.1';
         $Header[] = 'Host: ' . $ip;
