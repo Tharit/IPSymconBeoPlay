@@ -146,7 +146,7 @@ class BeoPlaySpeakerDevice extends IPSModule
         $parentID = $this->GetConnectionID();
         $ip = IPS_GetProperty($parentID, 'Host');
         $path = '/BeoNotify/Notifications';
-        $this->JSCConnect($ip, $path, $cookie);
+        $this->JSCConnect($ip, $path);
     }
 
     private function Disconnect() {
