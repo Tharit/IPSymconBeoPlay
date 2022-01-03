@@ -30,11 +30,13 @@ class BeoPlaySpeakerDevice extends IPSModule
         $this->RegisterVariableString("Source", "Source");
         $this->RegisterVariableString("Application", "Application");
         $this->RegisterVariableString("State", "State");
+        $this->RegisterVariableString("Artist", "Artist");
+        $this->RegisterVariableString("Album", "Album");
         $this->RegisterVariableString("Title", "Title");
         $this->RegisterVariableInteger("Position", "Position");
         $this->RegisterVariableInteger("Duration", "Duration");
         $this->RegisterVariableString("Cover", "Cover");
-        $this->RegisterVariableFloat("Volume", "Volume", "~Intensity.1");
+        $this->RegisterVariableFloat("Volume", "Volume");
         $this->EnableAction("Volume");
 
         // messages
@@ -137,15 +139,9 @@ class BeoPlaySpeakerDevice extends IPSModule
 
         // title
         if($type === 'NOW_PLAYING_STORED_MUSIC' && $kind === 'playing') {
-            if(isset($data['name'])) {
-                $newTitle = $data['name'];
-                if(isset($data['artist'])) {
-                    $newTitle .= ' • ' . $data['artist'];
-                }
-            } else {
-                $newTitle = '-';
-            }
-            $this->SetValue("Title", $newTitle);
+            $this->SetValue("Title", isset($data['name']) ? $data['name'] : '-');
+            $this->SetValue("Album", isset($data['artist']) ? $data['artist'] : '-');
+            $this->SetValue("Artist", isset($data['album']) ? $data['album'] : '-');
             if(isset($data['trackImage']) && is_array($data['trackImage']) &&
             count($data['trackImage']) >= 1 && isset($data['trackImage'][0]['url'])) {
                 $cover = $data['trackImage'][0]['url'];
@@ -155,11 +151,15 @@ class BeoPlaySpeakerDevice extends IPSModule
             $this->SetValue("Cover", $cover);
             $this->SetValue("Duration", isset($data['duration']) ? $data['duration'] : 0);
             $this->SetValue("Position", 0);
+            $this->SetValue("Application", isset($data['originalSource']) ? $data['originalSource'] : '-');
         }
         if($type === 'NOW_PLAYING_ENDED' && $kind === 'playing') {
+            $this->SetValue("Artist", '-');
+            $this->SetValue("Album", '-');
             $this->SetValue("Title", '-');
             $this->SetValue("Cover", "");
             $this->SetValue("Source", "-");
+            $this->SetValue("Application", "-");
             $this->SetValue("Duration", 0);
         }
 
@@ -178,27 +178,51 @@ class BeoPlaySpeakerDevice extends IPSModule
             return;
         }
 
+        if($ident === 'Volume') {
+            $this->SetVolume($this->GetHost(), $value);
+        }
+
         $this->SendDebug('Action', $ident, 0);
     }
 
     //------------------------------------------------------------------------------------
     // external methods
     //------------------------------------------------------------------------------------
-    public function GetTrackerData() {
-        $data = $this->MUGetBuffer('Tracker');
-        return json_encode(empty($data) ? null : $data);
+    public function SetVolume($volume) {
+        return $this->SetVolume($this->GetHost());
     }
 
-    public function GetMediaData() {
-        $data = $this->MUGetBuffer('Media');
-        return json_encode(empty($data) ? null : $data);
+    public function Play($host) {
+        return $this->Play($this->GetHost());
+    }
+
+    public function Pause($host) {
+        return $this->Pause($this->GetHost());
+    }
+
+    public function Stop($host) {
+        return $this->Stop($this->GetHost());
+    }
+
+    public function Next($host) {
+        return $this->Next($this->GetHost());
+    }
+
+    public function Prev($host) {
+        return $this->Prev($this->GetHost());
     }
 
     //------------------------------------------------------------------------------------
     // module internals
     //------------------------------------------------------------------------------------
     private function ResetState() {
-        $this->SetValue('Title', '-');
+        $this->SetValue("Artist", '-');
+        $this->SetValue("Album", '-');
+        $this->SetValue("Title", '-');
+        $this->SetValue("Cover", "");
+        $this->SetValue("Source", "-");
+        $this->SetValue("Application", "-");
+        $this->SetValue("Duration", 0);
         $this->SetValue('Source', '-');
         $this->SetValue('State', 'stop');
         $this->MUSetBuffer('Media', null);
@@ -215,6 +239,13 @@ class BeoPlaySpeakerDevice extends IPSModule
         $ip = IPS_GetProperty($parentID, 'Host');
         $path = '/BeoNotify/Notifications';
         $this->JSCConnect($ip, $path);
+    }
+
+    private function GetHost() {
+        $parentID = $this->GetConnectionID();
+        $ip = IPS_GetProperty($parentID, 'Host');
+        $port = IPS_GetProperty($parentID, 'Port');
+        return "$ip:$port";
     }
 
     private function Disconnect() {
