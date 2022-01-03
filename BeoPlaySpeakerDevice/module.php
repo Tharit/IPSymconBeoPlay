@@ -140,8 +140,8 @@ class BeoPlaySpeakerDevice extends IPSModule
         // title
         if($type === 'NOW_PLAYING_STORED_MUSIC' && $kind === 'playing') {
             $this->SetValue("Title", isset($data['name']) ? $data['name'] : '-');
-            $this->SetValue("Album", isset($data['artist']) ? $data['artist'] : '-');
-            $this->SetValue("Artist", isset($data['album']) ? $data['album'] : '-');
+            $this->SetValue("Artist", isset($data['artist']) ? $data['artist'] : '-');
+            $this->SetValue("Album", isset($data['album']) ? $data['album'] : '-');
             if(isset($data['trackImage']) && is_array($data['trackImage']) &&
             count($data['trackImage']) >= 1 && isset($data['trackImage'][0]['url'])) {
                 $cover = $data['trackImage'][0]['url'];
