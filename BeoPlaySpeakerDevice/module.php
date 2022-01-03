@@ -179,7 +179,7 @@ class BeoPlaySpeakerDevice extends IPSModule
         }
 
         if($ident === 'Volume') {
-            $this->SetVolume($this->GetHost(), $value);
+            $this->BeoPlayAPISetVolume($this->GetHost(), $value);
         }
 
         $this->SendDebug('Action', $ident, 0);
@@ -189,27 +189,27 @@ class BeoPlaySpeakerDevice extends IPSModule
     // external methods
     //------------------------------------------------------------------------------------
     public function SetVolume($volume) {
-        return $this->SetVolume($this->GetHost());
+        return $this->BeoPlayAPISetVolume($this->GetHost());
     }
 
     public function Play($host) {
-        return $this->Play($this->GetHost());
+        return $this->BeoPlayAPIPlay($this->GetHost());
     }
 
     public function Pause($host) {
-        return $this->Pause($this->GetHost());
+        return $this->BeoPlayAPIPause($this->GetHost());
     }
 
     public function Stop($host) {
-        return $this->Stop($this->GetHost());
+        return $this->BeoPlayAPIStop($this->GetHost());
     }
 
     public function Next($host) {
-        return $this->Next($this->GetHost());
+        return $this->BeoPlayAPINext($this->GetHost());
     }
 
     public function Prev($host) {
-        return $this->Prev($this->GetHost());
+        return $this->BeoPlayAPIPrev($this->GetHost());
     }
 
     //------------------------------------------------------------------------------------
