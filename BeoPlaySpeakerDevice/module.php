@@ -188,27 +188,27 @@ class BeoPlaySpeakerDevice extends IPSModule
     //------------------------------------------------------------------------------------
     // external methods
     //------------------------------------------------------------------------------------
-    public function SetVolume($volume) {
-        return $this->BeoPlayAPISetVolume($this->GetHost());
+    public function SetVolume(int $volume) {
+        return $this->BeoPlayAPISetVolume($this->GetHost(), $volume);
     }
 
-    public function Play($host) {
+    public function Play() {
         return $this->BeoPlayAPIPlay($this->GetHost());
     }
 
-    public function Pause($host) {
+    public function Pause() {
         return $this->BeoPlayAPIPause($this->GetHost());
     }
 
-    public function Stop($host) {
+    public function Stop() {
         return $this->BeoPlayAPIStop($this->GetHost());
     }
 
-    public function Next($host) {
+    public function Next() {
         return $this->BeoPlayAPINext($this->GetHost());
     }
 
-    public function Prev($host) {
+    public function Prev() {
         return $this->BeoPlayAPIPrev($this->GetHost());
     }
 

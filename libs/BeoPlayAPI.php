@@ -1,7 +1,7 @@
 <?php
 
 trait BeoPlayAPI {
-    private function BeoPlayAPIRequest($host, $path, $path, $body = null) {
+    private function BeoPlayAPIRequest($host, $path, $body = null) {
         $url = "http://" . $host . $path;
 
         $headers = [];
