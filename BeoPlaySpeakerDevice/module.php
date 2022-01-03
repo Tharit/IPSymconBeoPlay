@@ -158,7 +158,6 @@ class BeoPlaySpeakerDevice extends IPSModule
             $this->SetValue("Album", '-');
             $this->SetValue("Title", '-');
             $this->SetValue("Cover", "");
-            $this->SetValue("Source", "-");
             $this->SetValue("Application", "-");
             $this->SetValue("Duration", 0);
         }
