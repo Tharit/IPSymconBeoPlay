@@ -35,26 +35,26 @@ trait BeoPlayAPI {
 
     private function BeoPlayAPIPlay($host) {
         $path = '/BeoZone/Zone/Stream/Play';
-        return $this->BeoPlayAPIRequest($host, $path);
+        return $this->BeoPlayAPIRequest($host, $path, null, "POST");
     }
 
     private function BeoPlayAPIPause($host) {
         $path = '/BeoZone/Zone/Stream/Pause';
-        return $this->BeoPlayAPIRequest($host, $path);
+        return $this->BeoPlayAPIRequest($host, $path, null, "POST");
     }
 
     private function BeoPlayAPIStop($host) {
         $path = '/BeoZone/Zone/Stream/Stop';
-        return $this->BeoPlayAPIRequest($host, $path);
+        return $this->BeoPlayAPIRequest($host, $path, null, "POST");
     }
 
     private function BeoPlayAPINext($host) {
         $path = '/BeoZone/Zone/Stream/Forward';
-        return $this->BeoPlayAPIRequest($host, $path);
+        return $this->BeoPlayAPIRequest($host, $path, null, "POST");
     }
 
     private function BeoPlayAPIPrev($host) {
         $path = '/BeoZone/Zone/Stream/Backward';
-        return $this->BeoPlayAPIRequest($host, $path);
+        return $this->BeoPlayAPIRequest($host, $path, null, "POST");
     }
 }
