@@ -36,7 +36,7 @@ class BeoPlaySpeakerDevice extends IPSModule
         $this->RegisterVariableInteger("Position", "Position");
         $this->RegisterVariableInteger("Duration", "Duration");
         $this->RegisterVariableString("Cover", "Cover");
-        $this->RegisterVariableFloat("Volume", "Volume");
+        $this->RegisterVariableInteger("Volume", "Volume");
         $this->EnableAction("Volume");
 
         // messages
