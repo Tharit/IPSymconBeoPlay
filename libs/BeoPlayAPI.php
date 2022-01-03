@@ -1,7 +1,7 @@
 <?php
 
 trait BeoPlayAPI {
-    private function BeoPlayAPIRequest($host, $path, $body = null) {
+    private function BeoPlayAPIRequest($host, $path, $body = null, $method = null) {
         $url = "http://" . $host . $path;
 
         $headers = [];
@@ -10,9 +10,14 @@ trait BeoPlayAPI {
         curl_setopt($ch, CURLOPT_URL, $url);
         //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        if($method) {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        }
         if($body) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            curl_setopt($ch, CURLOPT_POST, 1);
+            if(!$method) {
+                curl_setopt($ch, CURLOPT_POST, 1);
+            }
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -25,7 +30,7 @@ trait BeoPlayAPI {
 
     private function BeoPlayAPISetVolume($host, $volume) {
         $path = '/BeoZone/Zone/Sound/Volume/Speaker/Level';
-        return $this->BeoPlayAPIRequest($host, $path, ["level" => $volume]);
+        return $this->BeoPlayAPIRequest($host, $path, ["level" => $volume], "PUT");
     }
 
     private function BeoPlayAPIPlay($host) {
