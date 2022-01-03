@@ -1,7 +1,7 @@
 <?php
 
 trait BeoPlayAPI {
-    private function BeoPlayAPIRequest($host, $path, $body = null) {
+    private function BeoPlayAPIRequest($host, $path, $path, $body = null) {
         $url = "http://" . $host . $path;
 
         $headers = [];
@@ -25,31 +25,31 @@ trait BeoPlayAPI {
 
     private function BeoPlayAPISetVolume($host, $volume) {
         $path = '/BeoZone/Zone/Sound/Volume/Speaker/Level';
-        return $this->BeoPlayAPIRequest($host, ["level" => $volume]);
+        return $this->BeoPlayAPIRequest($host, $path, ["level" => $volume]);
     }
 
     private function BeoPlayAPIPlay($host) {
         $path = '/BeoZone/Zone/Stream/Play';
-        return $this->BeoPlayAPIRequest($host);
+        return $this->BeoPlayAPIRequest($host, $path);
     }
 
     private function BeoPlayAPIPause($host) {
         $path = '/BeoZone/Zone/Stream/Pause';
-        return $this->BeoPlayAPIRequest($host);
+        return $this->BeoPlayAPIRequest($host, $path);
     }
 
     private function BeoPlayAPIStop($host) {
         $path = '/BeoZone/Zone/Stream/Stop';
-        return $this->BeoPlayAPIRequest($host);
+        return $this->BeoPlayAPIRequest($host, $path);
     }
 
     private function BeoPlayAPINext($host) {
         $path = '/BeoZone/Zone/Stream/Forward';
-        return $this->BeoPlayAPIRequest($host);
+        return $this->BeoPlayAPIRequest($host, $path);
     }
 
     private function BeoPlayAPIPrev($host) {
         $path = '/BeoZone/Zone/Stream/Backward';
-        return $this->BeoPlayAPIRequest($host);
+        return $this->BeoPlayAPIRequest($host, $path);
     }
 }
