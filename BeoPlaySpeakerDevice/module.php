@@ -27,6 +27,7 @@ class BeoPlaySpeakerDevice extends IPSModule
         $this->JSCCreate();
 
         // variables
+        $this->RegisterVariableBoolean("Connected", "Connected");
         $this->RegisterVariableString("Source", "Source");
         $this->RegisterVariableString("Application", "Application");
         $this->RegisterVariableString("State", "State");
@@ -101,6 +102,8 @@ class BeoPlaySpeakerDevice extends IPSModule
                 // if parent became active: connect
                 if ($Data[0] === IS_ACTIVE) {
                     $this->Connect();
+                } else {
+                    $this->SetValue("Connected", false);
                 }
                 break;
             default:
@@ -116,6 +119,10 @@ class BeoPlaySpeakerDevice extends IPSModule
         return true;
     }
  
+    protected function JSCOnConnect() {
+        $this->SetValue("Connected", true);
+    }
+
     protected function JSCOnReceiveData($data) {
         // if data is null then the long polling response ended => restart with new request immediately
         if($data === null) {

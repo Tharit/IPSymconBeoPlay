@@ -91,6 +91,8 @@ trait JSONSocketClient {
                     $this->SetReceiveDataFilter($filter);
                 }
 
+                $this->JSCOnConnect();
+
                 $data = substr($data, $idx+4);
             }
         } else if($state === 2) {
