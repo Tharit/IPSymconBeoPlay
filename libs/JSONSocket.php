@@ -99,10 +99,8 @@ trait JSONSocketClient {
             // chunked encoding
             // <#octets>CRLF<data>CRLF
             while(true) {
-                $this->SendDebug('Received Chunk', $data, 0);
                 $idx = strpos($data, "\r\n");
                 if($idx === false) break;
-                $this->SendDebug('Received Chunk Size', substr($data, 0, $idx), 0);
                 $numOctets = hexdec(substr($data, 0, $idx));
 
                 // if zero then this is the last chunk
@@ -111,6 +109,10 @@ trait JSONSocketClient {
                     $this->JSCResetState();
                     $this->JSCOnReceiveData(null);
                     return;
+                }
+                // chunk might not have been fully received yet
+                if(strlen($data) < $numOctets+$idx+2) {
+                    break;
                 }
 
                 $chunk = substr($data, $idx+2, $numOctets);
