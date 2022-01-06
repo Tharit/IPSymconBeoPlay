@@ -100,6 +100,15 @@ trait JSONSocketClient {
                 $idx = strpos($data, "\r\n");
                 if($idx === false) break;
                 $numOctets = hexdec(substr($data, 0, $idx));
+
+                // if zero then this is the last chunk
+                if($numOctets === 0) {
+                    $this->SendDebug('Received data', 'Last chunk received', 0);
+                    $this->JSCResetState();
+                    $this->JSCOnReceiveData(null);
+                    return;
+                }
+
                 $chunk = substr($data, $idx+2, $numOctets);
                 $data = substr($data, $idx+2+$numOctets+2);
                 if($chunk) {

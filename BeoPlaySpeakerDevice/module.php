@@ -117,6 +117,12 @@ class BeoPlaySpeakerDevice extends IPSModule
     }
  
     protected function JSCOnReceiveData($data) {
+        // if data is null then the long polling response ended => restart with new request immediately
+        if($data === null) {
+            $this->Connect();
+            return;
+        }
+
         if(!isset($data['notification'])) return;
         $data = $data['notification'];
         $type = $data['type'];
