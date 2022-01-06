@@ -2,6 +2,7 @@
 
 trait JSONSocketClient {
     protected function JSCCreate() {
+        $this->RegisterTimer("PingTimer", 10000, 'IPS_RequestAction($_IPS["TARGET"], "JSC", "PingTimer");');
         $this->RegisterMessage(0, IPS_KERNELSHUTDOWN);
     }
 
@@ -23,6 +24,13 @@ trait JSONSocketClient {
     }
 
     protected function JSCRequestAction($value) {
+        if($this->MUGetBuffer('State') === 2) {
+            $lastMessage = $this->MUGetBuffer('LastMessage');
+            if(time() - $lastMessage > 15000) {
+                $this->JSCDisconnect();
+                $this->SendDebug('Error', 'Socket Timeout', 0);
+            }
+        }
     }
 
     protected function JSCMessageSink($TimeStamp, $SenderID, $Message, $Data) {
@@ -85,6 +93,7 @@ trait JSONSocketClient {
 
                 $this->MUSetBuffer('Data', '');
                 $this->MUSetBuffer('State', 2);
+                $this->MUSetBuffer('LastMessage', time());
 
                 $filter = $this->MUGetBuffer('JSCReceiveDataFilter');
                 if($filter) {
@@ -96,6 +105,7 @@ trait JSONSocketClient {
                 $data = substr($data, $idx+4);
             }
         } else if($state === 2) {
+            $this->MUSetBuffer("LastMessage", time());
             // chunked encoding
             // <#octets>CRLF<data>CRLF
             while(true) {
