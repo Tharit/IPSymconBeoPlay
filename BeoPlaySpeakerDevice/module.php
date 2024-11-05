@@ -25,7 +25,7 @@ class BeoPlaySpeakerDevice extends IPSModule
 
         // timers
         $this->JSCCreate();
-
+        
         // variables
         $this->RegisterVariableBoolean("Connected", "Connected");
         $this->RegisterVariableString("Source", "Source");

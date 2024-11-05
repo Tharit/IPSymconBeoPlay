@@ -2,7 +2,7 @@
 
 trait JSONSocketClient {
     protected function JSCCreate() {
-        $this->RegisterTimer("PingTimer", 10000, 'IPS_RequestAction($_IPS["TARGET"], "JSC", "PingTimer");');
+        $this->RegisterTimer("PingTimer", 60000, 'IPS_RequestAction($_IPS["TARGET"], "JSC", "PingTimer");');
         $this->RegisterMessage(0, IPS_KERNELSHUTDOWN);
     }
 
@@ -24,7 +24,7 @@ trait JSONSocketClient {
     }
 
     protected function JSCRequestAction($value) {
-        if($this->MUGetBuffer('State') === 2) {
+        if($this->MUGetBuffer('State') > 0) {
             $lastMessage = $this->MUGetBuffer('LastMessage');
             if(time() - $lastMessage > 15000) {
                 $this->JSCDisconnect();
